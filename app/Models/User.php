@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Danestves\LaravelPolar\Billable;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,14 +10,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Support\Str;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, HasUuids, Notifiable, TwoFactorAuthenticatable;
+    use Billable, HasApiTokens, HasFactory, HasUuids, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * @var list<string>
@@ -65,13 +66,5 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
-    }
-
-    /**
-     * Placeholder until Polar billing is integrated in Phase 3.
-     */
-    public function subscribed(): bool
-    {
-        return false;
     }
 }
