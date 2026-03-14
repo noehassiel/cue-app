@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'check.plan.limits' => CheckPlanLimits::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'polar/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

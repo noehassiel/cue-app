@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Fund;
 use App\Models\FundMovement;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -10,15 +11,28 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class FundMovementFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'fund_id' => Fund::factory(),
+            'type' => fake()->randomElement(['deposit', 'withdrawal']),
+            'amount' => fake()->randomFloat(4, 100, 5000),
+            'note' => fake()->optional()->sentence(),
+            'movement_date' => fake()->dateTimeBetween('-1 month', 'now')->format('Y-m-d'),
         ];
+    }
+
+    public function deposit(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => 'deposit',
+        ]);
+    }
+
+    public function withdrawal(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => 'withdrawal',
+        ]);
     }
 }

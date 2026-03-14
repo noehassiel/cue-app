@@ -7,11 +7,13 @@ use App\Http\Requests\Transaction\ConfirmTransactionRequest;
 use App\Http\Requests\Transaction\StoreTransactionRequest;
 use App\Http\Requests\Transaction\UpdateTransactionRequest;
 use App\Http\Resources\Api\TransactionResource;
+use App\Imports\TransactionsImport;
 use App\Models\Transaction;
 use App\Models\Workspace;
 use App\Services\CurrencyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TransactionController extends Controller
 {
@@ -22,7 +24,7 @@ class TransactionController extends Controller
         $query = $workspace->transactions()->orderBy('projected_date', 'desc');
 
         if ($request->has('month')) {
-            $query->where('projected_date', 'like', $request->query('month') . '%');
+            $query->where('projected_date', 'like', $request->query('month').'%');
         }
 
         if ($request->has('type')) {
@@ -107,5 +109,19 @@ class TransactionController extends Controller
         $transaction->update(['confirmed_at' => $confirmedAt]);
 
         return response()->json(['data' => new TransactionResource($transaction)]);
+    }
+
+    /**
+     * Import transactions from an uploaded Excel / CSV file.
+     */
+    public function import(Request $request, Workspace $workspace): JsonResponse
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:5120'],
+        ]);
+
+        Excel::import(new TransactionsImport($workspace), $request->file('file'));
+
+        return response()->json(['message' => 'Transactions imported successfully'], 201);
     }
 }

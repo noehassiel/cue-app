@@ -54,6 +54,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'api_base_url' => env('API_BASE_URL', 'https://api.cueapp.io/api/v1'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
